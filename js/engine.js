@@ -9,23 +9,41 @@
  * drawn but that is not the case. What's really happening is the entire "scene"
  * is being drawn over and over, presenting the illusion of animation.
  *
- * This engine makes the canvas' context (ctx) object globally available to make 
+ * This engine makes the canvas' context (ctx) object globally available to make
  * writing app.js a little simpler to work with.
  */
 
-var Engine = (function(global) {
+const ROWS = 6;
+const COLS = 5;
+const CANVAS_WIDTH = 505;
+const CANVAS_HEIGHT = 606;
+const CELL_WIDTH = 101;
+const CELL_HEIGHT = 83;
+const ENEMY_ROWS = 3;
+
+
+let player = new Player();
+
+let Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
-    var doc = global.document,
+
+
+    let doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = 505;
-    canvas.height = 606;
+    let allEnemies = [];
+
+    let cnt = 0;
+    let collision = false;
+
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -39,7 +57,7 @@ var Engine = (function(global) {
          * computer is) - hurray time!
          */
         var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
+            dt = (now - lastTime) / 700;
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
@@ -55,7 +73,9 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+         cnt++;
+         if (cnt < 1000 && !collision)
+            win.requestAnimationFrame(main);
     }
 
     /* This function does some initial setup that should only occur once,
@@ -79,7 +99,51 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
+    }
+
+    function checkCollisions() {
+
+
+        playerCell = player.getCell();
+        let playerRow = playerCell.row;
+
+        // don't check for collisions if player is not in enemy rows
+        if (playerRow < 1 || playerRow > ENEMY_ROWS)
+            return;
+
+        // check enemy that occupies same row as player
+        let enemyIndex = playerRow - 1;
+        let enemyCell = allEnemies[enemyIndex].getCell();
+        console.log(allEnemies[enemyIndex]);
+                console.log(allEnemies[enemyIndex].getCell());
+                console.log(player);
+                console.log(player.getCell());
+
+        if ((enemyCell.row === playerRow) && (enemyCell.col === playerCell.col)) {
+                collision = true;
+                console.log("collision1");
+                console.log(allEnemies[enemyIndex]);
+                console.log(allEnemies[enemyIndex].getCell());
+                console.log(player);
+                console.log(player.getCell());
+                return;
+        }
+
+        // check enemies that are assigned to random rows
+        for (let i = ENEMY_ROWS; i < allEnemies.length; i++) {
+            enemyCell = allEnemies[i].getCell();
+            if ((enemyCell.row === playerRow) && (enemyCell.col === playerCell.col)) {
+                collision = true;
+
+                console.log("collision2");
+                console.log(allEnemies[i]);
+                console.log(allEnemies[i].getCell());
+                console.log(player);
+                console.log(player.getCell());
+                return;
+            }
+        }
     }
 
     /* This is called by the update function and loops through all of the
@@ -91,9 +155,16 @@ var Engine = (function(global) {
      */
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
+           enemy.update(dt);
         });
-        player.update();
+       player.update();
+    }
+
+    function createEnemies(enemyCnt) {
+
+        for (let i = 0; i < enemyCnt; i++) {
+           allEnemies.push(new Enemy());
+        }
     }
 
     /* This function initially draws the "game level", it will then call
@@ -106,7 +177,7 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
-        var rowImages = [
+        let rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
@@ -114,10 +185,8 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 6,
-            numCols = 5,
             row, col;
-        
+
         // Before drawing, clear existing canvas
         ctx.clearRect(0,0,canvas.width,canvas.height)
 
@@ -125,8 +194,9 @@ var Engine = (function(global) {
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
          */
-        for (row = 0; row < numRows; row++) {
-            for (col = 0; col < numCols; col++) {
+
+        for (row = 0; row < ROWS; row++) {
+            for (col = 0; col < COLS; col++) {
                 /* The drawImage function of the canvas' context element
                  * requires 3 parameters: the image to draw, the x coordinate
                  * to start drawing and the y coordinate to start drawing.
@@ -134,7 +204,7 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                ctx.drawImage(Resources.get(rowImages[row]), col * CELL_WIDTH, row * CELL_HEIGHT);
             }
         }
 
@@ -153,7 +223,8 @@ var Engine = (function(global) {
             enemy.render();
         });
 
-        player.render();
+
+       player.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -161,7 +232,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        createEnemies(4);
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -173,7 +244,8 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png'
     ]);
     Resources.onReady(init);
 
@@ -182,4 +254,6 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-})(this);
+});
+
+let engine = new Engine(this);
