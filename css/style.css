@@ -1,3 +1,80 @@
 body {
     text-align: center;
+    font-family: 'Handlee', cursive;
+}
+
+.font-sz {
+    font-size: 1.5em;
+}
+
+.show {
+    opacity: 1;
+    z-index: 1;
+}
+
+.hide {
+    opacity: 0;
+    z-index: -1;
+}
+
+.menu {
+    width: 100%;
+    height: 5vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.menu-ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #1ebb1e;
+    color: #ccc;
+}
+
+.menu-li {
+    padding-left: 5vw;
+    padding-right: 5vw;
+    display: inline;
+    border-right: 1px solid #ccc;
+}
+
+.menu-li:last-child {
+    border-right: none;
+}
+
+.menu-li:hover {
+    color: #fff;
+}
+
+.close-x {
+  /*  position: fixed;
+    top: 0;
+    left: calc(95vw);
+    font-size: 1.5em; */
+    display: block;
+    font-family: sans-serif;
+    text-align: right;
+    margin:0;
+    padding-right:1vw;
+    color: green;
+}
+
+.overlay {
+    height: 90vh;
+    width: 100vw;
+    position: fixed;
+    top: calc(5vh);
+    left: 0;
+}
+
+.players {}
+
+.players-ul {
+    list-style-type: none;
+    margin: 5px;
+    padding: 5px;
+    background-color: green;
+    color: white;
 }

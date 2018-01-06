@@ -15,14 +15,17 @@
 
 const ROWS = 6;
 const COLS = 5;
-const CANVAS_WIDTH = 505;
-const CANVAS_HEIGHT = 606;
 const CELL_WIDTH = 101;
 const CELL_HEIGHT = 83;
+const CANVAS_WIDTH = 505;
+const CANVAS_HEIGHT = 606;
+
 const ENEMY_ROWS = 3;
 
-
 let player = new Player();
+let menu = new MenuComponent("green", CANVAS_WIDTH - CELL_WIDTH/2, 20, 3);
+let stop = false;
+
 
 let Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
@@ -37,10 +40,17 @@ let Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+    canvas.addEventListener('click', function(e) {
+        menu.handleInput(e);
+    });
+
     let allEnemies = [];
 
     let cnt = 0;
     let collision = false;
+    let title = new TitleComponent("#1ebb1e", CANVAS_WIDTH/2, 40, "Frogger");
+
+    console.log(menu);
 
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
@@ -74,7 +84,7 @@ let Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
          cnt++;
-         if (cnt < 1000 && !collision)
+         if (cnt < 1000 && !collision && !stop)
             win.requestAnimationFrame(main);
     }
 
@@ -190,6 +200,8 @@ let Engine = (function(global) {
         // Before drawing, clear existing canvas
         ctx.clearRect(0,0,canvas.width,canvas.height)
 
+        //ctx.fillRect(0, 0, canvas.width,canvas.height);
+
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
@@ -208,6 +220,9 @@ let Engine = (function(global) {
             }
         }
 
+
+        title.render(ctx);
+        menu.render(ctx);
         renderEntities();
     }
 

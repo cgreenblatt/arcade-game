@@ -1,52 +1,119 @@
+let Component = function(color, x, y) {
 
-// Enemies our player must avoid
-let Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
+        this.x = x;
+        this.y = y;
+        this.color = color;
+}
 
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
+Component.prototype.render = function(ctx) {}
 
-    this.sprite = 'images/enemy-bug.png';
-    this.id = Enemy.prototype.enemyCnt++;
-    console.log(this.id);
-    this.x = this.getNewX();
+let TitleComponent = function(color, x, y, text) {
+    Component.call(this, color, x, y);
+    this.text = text;
+}
 
-    if (this.id <= ENEMY_ROWS)
-        this.row = this.id;
-    else
-        this.row = this.getNewRow();
+TitleComponent.prototype = Object.create(Component.prototype);
+TitleComponent.prototype.constructor = TitleComponent;
 
-    this.y = this.getNewY(this.row);
-    this.rate = this.getNewRate();
+TitleComponent.prototype.render = function(ctx) {
 
-    console.log(this.x + " " + this.y);
-    console.log("player offset ***** " + Player.prototype.OFFSET++);
-};
+        ctx.font = "32px Comic Sans MS";
+        ctx.fillStyle = this.color;
+        ctx.textAlign = "center";
+        ctx.fillText(this.text,this.x,this.y);
+}
 
-Enemy.prototype.enemyCnt = 1;
+let MenuComponent = function(color, x, y, bars) {
+    Component.call(this, color, x, y);
+    this.bars = bars;
+    this.space = 6;
+    this.lineWidth = 5;
+    this.width = 40;
+}
+
+MenuComponent.prototype = Object.create(Component.prototype);
+MenuComponent.prototype.constructor = MenuComponent;
+
+MenuComponent.prototype.render = function(ctx) {
+
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = this.lineWidth;
+    let y = this.y;
+    for (i = 0; i < this.bars; i++) {
+        ctx.moveTo(this.x, y);
+        ctx.lineTo(this.x + this.width, y);
+        ctx.stroke();
+        y += this.lineWidth + this.space;
+    }
+}
+
+MenuComponent.prototype.handleInput = function(e) {
+
+    if (e.offsetX < this.x ||
+        e.offsetX > e.offsetX + this.width ||
+        e.offsetY < this.y ||
+        e.offsetY > this.y + this.bars * this.lineWidth + (this.bars - 1) * this.space)
+        return;
+    stop = true;
+    $('.menu').removeClass('hide').addClass('show');
+    $('canvas').addClass('hide');
+    console.log(e);
+
+}
+
+
+let  GamePiece = function(sprite, row, col) {
+    this.sprite = sprite;
+    this.row = row;
+    this.col = col;
+    this.x = col * CELL_WIDTH;
+    this.y = row * CELL_HEIGHT;
+}
+
+GamePiece.prototype.getCell = function() {
+    return {
+        col: this.col,
+        row: this.row,
+    };
+}
 
 // stackoverflow 1527803
-Enemy.prototype.getRandomInt = function(min, max) {
+GamePiece.prototype.getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-Enemy.prototype.getNewRow = function() {
 
-    let row = this.getRandomInt(1, ENEMY_ROWS);
-    console.log("row is " + row);
-    return row;
+
+// Enemies our player must avoid
+let Enemy = function() {
+    GamePiece.call(this,
+        'images/enemy-bug.png',
+        // if there are more than three enemies, assign extra enemy to random row
+        Enemy.prototype.enemyCnt <= ENEMY_ROWS? Enemy.prototype.enemyCnt: Enemy.prototype.getRandomRow(),
+        0);
+
+    this.y -= Enemy.prototype.PIXEL_OFFSET;
+    this.x = this.getRandomStartX();
+    this.id = Enemy.prototype.enemyCnt++;
+    this.rate = this.getRandomRate();
+
+    console.log(this.x + " " + this.y);
 }
 
-Enemy.prototype.getRow = function() {
-    return this.row;
+Enemy.prototype = Object.create(GamePiece.prototype);
+Enemy.prototype.constructor = Enemy;
+
+Enemy.prototype.enemyCnt = 1;
+Enemy.prototype.PIXEL_OFFSET = 20;
+
+Enemy.prototype.getRandomRow = function() {
+
+    return GamePiece.prototype.getRandomInt(1, ENEMY_ROWS);
 }
 
 Enemy.prototype.getNewY = function(row) {
 
-    let y = row * CELL_HEIGHT - 20;
-    console.log("y is " + y);
-    return y;
+    return row * CELL_HEIGHT - Enemy.prototype.PIXEL_OFFSET;
 }
 
 Enemy.prototype.getCell = function() {
@@ -55,11 +122,11 @@ Enemy.prototype.getCell = function() {
         col: Math.round(this.x/CELL_WIDTH)};
 }
 
-Enemy.prototype.getNewX = function() {
+Enemy.prototype.getRandomStartX = function() {
     return -(this.getRandomInt(0, 1000));
 }
 
-Enemy.prototype.getNewRate = function() {
+Enemy.prototype.getRandomRate = function() {
     return 50 + this.getRandomInt(0, 300);
 }
 
@@ -72,35 +139,35 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 
     this.x += (this.rate * dt);
+    // if enemy is now off canvas
     if (this.x > CANVAS_WIDTH) {
-        this.x = 0;
-    if (this.id > ENEMY_ROWS)
-        this.row = this.getNewRow();
-    this.y = this.getNewY(this.row);
-    this.rate = this.getNewRate();
+        this.x = this.getRandomStartX();
+        // if enemy id is > 3, assign this enemy to new random row
+        if (this.id > ENEMY_ROWS) {
+            this.row = this.getRandomRow();
+            // get new y position based on new random row
+            this.y = this.getNewY(this.row);
+        }
+        // get new rate of speed
+        this.rate = this.getRandomRate();
     }
-};
+}
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+}
 
 let Player = function() {
-    this.sprite = 'images/char-cat-girl.png';
+    GamePiece.call(this, 'images/char-cat-girl.png', 5, 2);
     this.x = CELL_WIDTH * 2;
-    this.y = CELL_HEIGHT * 4 + this.OFFSET;
-    this.row = 5;
-    this.col = 2;
+    this.y += this.PIXEL_OFFSET;
 }
 
-Player.prototype.OFFSET = 50;
+Player.prototype = Object.create(GamePiece.prototype);
+Player.prototype.constructor = Player;
 
-Player.prototype.getCell = function() {
-   return {
-        row: this.row,
-        col: this.col}
-}
+Player.prototype.PIXEL_OFFSET = -23;
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -163,3 +230,9 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+/*$('canvas').click(function(e) {
+        menu.handleInput(e);
+    }
+);*/
+
