@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Effective JavaScript: Frogger</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css?family=Handlee" rel="stylesheet">
@@ -11,41 +12,44 @@
     </script>
 </head>
 <body>
-
+<div class="game-options hide">
     <div class="menu hide font-sz">
-        <h2 class="close-x">&times;</h2>
-        <ul class="menu-ul">
-            <li class="menu-li">Player</li>
+        <section class="align-right">
+            <h2 class="close-x">&times;</h2>
+        </section>
+        <ul class="menu-ul .gray-text">
+            <li class="menu-li">Players</li>
             <li class="menu-li">Prizes</li>
             <li class="menu-li">Scores</li>
         </ul>
 
     </div>
 
-    <div class="players hide overlay">
-        <section>
-        <ul class="players-ul">
+
+       <ul class="players-ul hide ">
             <li class="players-li">
-                <img src="images/char-boy.png" alt="just a boy" class="player-img">
+                <img src="images/char-boy.png" alt="just a boy" class="player-img player-selected">
             </li>
             <li class="players-li">
-                <img src="images/char-cat-girl.png" alt="girl wearing pink cat hat" class="player-img">
+                <img src="images/char-cat-girl.png" alt="girl wearing pink cat hat"
+                class="player-img">
             </li>
             <li class="players-li">
                 <img src="images/char-horn-girl.png" alt="aviatrix wearing horned hat" class="player-img">
             </li>
             <li class="players-li">
-                <img src="images/char-pink-girl.png" alt="girl with pink hair" class="player-img">
+                <img src="images/char-pink-girl.png" alt="girl with pink hair"
+                class="player-img">
             </li>
             <li class="players-li">
                 <img src="images/char-princess-girl.png" alt="princess wearing golden crown" class="player-img">
             </li>
         </ul>
-    </section>
-    </div>
 
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>
+
+
 </body>
 </html>

@@ -13,48 +13,41 @@
  * writing app.js a little simpler to work with.
  */
 
-const ROWS = 6;
-const COLS = 5;
-const CELL_WIDTH = 101;
-const CELL_HEIGHT = 83;
-const CANVAS_WIDTH = 505;
-const CANVAS_HEIGHT = 606;
-
-const ENEMY_ROWS = 3;
-
-let player = new Player();
-let menu = new MenuComponent("green", CANVAS_WIDTH - CELL_WIDTH/2, 20, 3);
-let stop = false;
 
 
-let Engine = (function(global) {
+let game = new Game(this);
+
+
+(function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
 
 
-    let doc = global.document,
-        win = global.window,
-        canvas = doc.createElement('canvas'),
+
+    let win = global.window,
+        canvas = game.getCanvas(),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime,
+        player;
 
-    canvas.addEventListener('click', function(e) {
-        menu.handleInput(e);
-    });
 
-    let allEnemies = [];
+
+
+    let allEnemies = game.getEnemies();
+    console.log("allEnemies");
+    console.log(allEnemies);
+  /*  let menu = game.getMenuBar();
+    let title = game.getTitle();
+    let restart = game.getRestartButton();
+    let clock = game.clockComponent;*/
+    let renderables = game.getRenderables();
+    let updateables = game.getUpdateables();
 
     let cnt = 0;
     let collision = false;
-    let title = new TitleComponent("#1ebb1e", CANVAS_WIDTH/2, 40, "Frogger");
-
-    console.log(menu);
-
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-    doc.body.appendChild(canvas);
+    let stop = false;
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -84,7 +77,7 @@ let Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
          cnt++;
-         if (cnt < 1000 && !collision && !stop)
+         if (!collision && !stop)
             win.requestAnimationFrame(main);
     }
 
@@ -94,8 +87,14 @@ let Engine = (function(global) {
      */
     function init() {
         reset();
+        if (!player)
+            player = game.getPlayer();
         lastTime = Date.now();
         main();
+    }
+
+    function stopEngine() {
+        stop = true;
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -167,14 +166,10 @@ let Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
            enemy.update(dt);
         });
-       player.update();
-    }
-
-    function createEnemies(enemyCnt) {
-
-        for (let i = 0; i < enemyCnt; i++) {
-           allEnemies.push(new Enemy());
-        }
+        for (let i = 0; i < updateables.length; i++)
+            updateables[i].update();
+       //player.update();
+       //clock.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -221,8 +216,6 @@ let Engine = (function(global) {
         }
 
 
-        title.render(ctx);
-        menu.render(ctx);
         renderEntities();
     }
 
@@ -235,11 +228,11 @@ let Engine = (function(global) {
          * the render function you have defined.
          */
         allEnemies.forEach(function(enemy) {
-            enemy.render();
+            enemy.render(ctx);
         });
 
-
-       player.render();
+        for (let i = 0; i < renderables.length; i++)
+            renderables[i].render(ctx);
     }
 
     /* This function does nothing but it could have been a good place to
@@ -247,21 +240,16 @@ let Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        createEnemies(4);
+        stop = false;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
      */
-    Resources.load([
-        'images/stone-block.png',
-        'images/water-block.png',
-        'images/grass-block.png',
-        'images/enemy-bug.png',
-        'images/char-boy.png',
-        'images/char-cat-girl.png'
-    ]);
+    Resources.load(PLAYER_IMAGES);
+    Resources.load(BOARD_IMAGES);
+    Resources.load(PRIZE_IMAGES);
     Resources.onReady(init);
 
     /* Assign the canvas' context object to the global variable (the window
@@ -269,6 +257,9 @@ let Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-});
 
-let engine = new Engine(this);
+    win.Engine = {
+            init: init,
+            stop: stopEngine,
+    };
+})(this);

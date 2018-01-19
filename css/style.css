@@ -1,6 +1,30 @@
+html {
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
 body {
     text-align: center;
     font-family: 'Handlee', cursive;
+}
+
+.white-text {
+    color: #fff;
+}
+
+.gray-text {
+    color: #ccc;
+}
+
+.game-options {
+    width: 100%;
+    height: 100%;
+    position: fixed;
 }
 
 .font-sz {
@@ -15,14 +39,11 @@ body {
 .hide {
     opacity: 0;
     z-index: -1;
+    display: none;
 }
 
 .menu {
     width: 100%;
-    height: 5vh;
-    position: fixed;
-    top: 0;
-    left: 0;
 }
 
 .menu-ul {
@@ -46,35 +67,54 @@ body {
 
 .menu-li:hover {
     color: #fff;
+    cursor: pointer;
+}
+
+.align-right {
+    text-align: right;
 }
 
 .close-x {
-  /*  position: fixed;
-    top: 0;
-    left: calc(95vw);
-    font-size: 1.5em; */
-    display: block;
+    display: inline-block;
     font-family: sans-serif;
-    text-align: right;
     margin:0;
-    padding-right:1vw;
-    color: green;
+    padding-right:20px;
+    color: #1ebb1e;
 }
 
-.overlay {
-    height: 90vh;
-    width: 100vw;
-    position: fixed;
-    top: calc(5vh);
-    left: 0;
+.close-x:hover {
+    cursor: pointer;
 }
 
-.players {}
+.cursor-pointer {
+    cursor: pointer;
+}
+
+
+.players-li {
+    display: inline;
+}
+
+.player-img {
+    border: 2px solid #ccc;
+    border-radius: 6px;
+}
+
+.player-img-hover {
+    cursor: pointer;
+    border: 2px dotted #1ebb1e;
+    border-radius: 6px;
+}
+
+.player-selected {
+    border: 2px solid #1ebb1e;
+    border-radius: 6px;
+}
 
 .players-ul {
     list-style-type: none;
     margin: 5px;
     padding: 5px;
-    background-color: green;
-    color: white;
 }
+
+
