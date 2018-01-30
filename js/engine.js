@@ -1,4 +1,4 @@
-/* Engine.js
+/* js
  * This file provides the game loop functionality (update entities and render),
  * draws the initial game board on the screen, and then calls the update and
  * render methods on your player and enemy objects (defined in your app.js).
@@ -46,7 +46,6 @@ let game = new Game(this);
     let updateables = game.getUpdateables();
 
     let cnt = 0;
-    let collision = false;
     let stop = false;
 
     /* This function serves as the kickoff point for the game loop itself
@@ -77,7 +76,7 @@ let game = new Game(this);
          * function again as soon as the browser is able to draw another frame.
          */
          cnt++;
-         if (!collision && !stop)
+         if (!stop)
             win.requestAnimationFrame(main);
     }
 
@@ -86,15 +85,18 @@ let game = new Game(this);
      * game loop.
      */
     function init() {
+        console.log("in init");
         reset();
-        if (!player)
-            player = game.getPlayer();
+        player = game.getPlayer();
         lastTime = Date.now();
         main();
     }
 
     function stopEngine() {
+        console.log("stop before assignment is " + stop);
         stop = true;
+        console.log("in stop engine after assignment stop is " + stop);
+        console.log(this);
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -108,51 +110,58 @@ let game = new Game(this);
      */
     function update(dt) {
         updateEntities(dt);
-        checkCollisions();
+        let cell = player.getCell();
+        // don't check for collisions or prizes if player is not in enemy rows
+        if (cell.row < 1 || cell.row > ENEMY_ROWS) return;
+
+        if (collision(cell))
+           game.processGameEnd("LOSS");
+       else
+            checkPrizeCapture(cell);
+
     }
 
-    function checkCollisions() {
+function checkPrizeCapture(cell) {
+
+    let prize = Prize.prototype.board.getCellOccupant(cell);
+    if (prize) {
+        game.processCapturedPrize(prize);
+    }
+}
 
 
-        playerCell = player.getCell();
-        let playerRow = playerCell.row;
+function collision(playerCell) {
 
-        // don't check for collisions if player is not in enemy rows
-        if (playerRow < 1 || playerRow > ENEMY_ROWS)
-            return;
 
         // check enemy that occupies same row as player
-        let enemyIndex = playerRow - 1;
+        let enemyIndex = playerCell.row - 1;
         let enemyCell = allEnemies[enemyIndex].getCell();
-        console.log(allEnemies[enemyIndex]);
+console.log(allEnemies[enemyIndex]);
                 console.log(allEnemies[enemyIndex].getCell());
                 console.log(player);
                 console.log(player.getCell());
 
-        if ((enemyCell.row === playerRow) && (enemyCell.col === playerCell.col)) {
-                collision = true;
-                console.log("collision1");
+        if ((enemyCell.row === playerCell.row) && (enemyCell.col === playerCell.col)) {
+                                console.log("collision1");
                 console.log(allEnemies[enemyIndex]);
                 console.log(allEnemies[enemyIndex].getCell());
                 console.log(player);
                 console.log(player.getCell());
-                return;
+                return true;
         }
 
         // check enemies that are assigned to random rows
         for (let i = ENEMY_ROWS; i < allEnemies.length; i++) {
             enemyCell = allEnemies[i].getCell();
-            if ((enemyCell.row === playerRow) && (enemyCell.col === playerCell.col)) {
-                collision = true;
-
+            if ((enemyCell.row === playerCell.row) && (enemyCell.col === playerCell.col)) {
                 console.log("collision2");
                 console.log(allEnemies[i]);
                 console.log(allEnemies[i].getCell());
-                console.log(player);
-                console.log(player.getCell());
-                return;
+                console.log(playerCell);
+                return true;
             }
         }
+        return false;
     }
 
     /* This is called by the update function and loops through all of the
@@ -260,6 +269,6 @@ let game = new Game(this);
 
     win.Engine = {
             init: init,
-            stop: stopEngine,
+            stopEngine: stopEngine,
     };
 })(this);

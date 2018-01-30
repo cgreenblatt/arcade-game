@@ -12,40 +12,44 @@
     </script>
 </head>
 <body>
-<div class="game-options hide">
-    <div class="menu hide font-sz">
+    <div class="game-options hide">
         <section class="align-right">
             <h2 class="close-x">&times;</h2>
         </section>
-        <ul class="menu-ul .gray-text">
-            <li class="menu-li">Players</li>
-            <li class="menu-li">Prizes</li>
-            <li class="menu-li">Scores</li>
-        </ul>
-
-    </div>
 
 
-       <ul class="players-ul hide ">
+      <ul class="players-ul">
             <li class="players-li">
-                <img src="images/char-boy.png" alt="just a boy" class="player-img player-selected">
+                <img src="images/char-boy.png" alt="just a boy" class="player player-selected">
+                <textarea class="player player-selected"></textarea>
             </li>
             <li class="players-li">
                 <img src="images/char-cat-girl.png" alt="girl wearing pink cat hat"
-                class="player-img">
+                class="player">
+                <textarea class="player"></textarea>
             </li>
             <li class="players-li">
-                <img src="images/char-horn-girl.png" alt="aviatrix wearing horned hat" class="player-img">
+                <img src="images/char-horn-girl.png" alt="aviatrix wearing horned hat" class="player">
+                <textarea class="player"></textarea>
             </li>
             <li class="players-li">
                 <img src="images/char-pink-girl.png" alt="girl with pink hair"
-                class="player-img">
+                class="player">
+                <textarea class="player"></textarea>
             </li>
             <li class="players-li">
-                <img src="images/char-princess-girl.png" alt="princess wearing golden crown" class="player-img">
+                <img src="images/char-princess-girl.png" alt="princess wearing golden crown" class="player">
+                <textarea class="player"></textarea>
             </li>
         </ul>
-
+    </div>
+    <div class="game-over-overlay hide">
+        <h2 class="game-over-message"></h2>
+        <h4 class="win-data"></h4>
+        <div class="button">
+            <button class="buttn">Play again!</button>
+        </div>
+    </div>
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>

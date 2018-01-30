@@ -25,6 +25,7 @@ body {
     width: 100%;
     height: 100%;
     position: fixed;
+    overflow-y: auto;
 }
 
 .font-sz {
@@ -90,25 +91,26 @@ body {
     cursor: pointer;
 }
 
-
-.players-li {
-    display: inline;
+textarea {
+    width: 200px;
+    resize: none;
+    overflow-y: scroll;
+    font-family: Handlee;
 }
 
-.player-img {
+.player {
     border: 2px solid #ccc;
     border-radius: 6px;
+    height: 175px;
 }
 
 .player-img-hover {
     cursor: pointer;
     border: 2px dotted #1ebb1e;
-    border-radius: 6px;
 }
 
 .player-selected {
     border: 2px solid #1ebb1e;
-    border-radius: 6px;
 }
 
 .players-ul {
@@ -117,4 +119,16 @@ body {
     padding: 5px;
 }
 
+.game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #fff;
+    width: 100vw;
+    height: 100vh;
+    text-align: center;
+}
 
