@@ -161,12 +161,7 @@ MenuBarComponent.prototype.clickHandler = function(e) {
         return;
     Engine.stopEngine();
     $('.game-options').removeClass('hide').addClass('show');
-    $('.menu').removeClass('hide').addClass('show');
-    $('canvas').addClass('hide');
-    for (let i = 0; i < game.players.lenth; i++) {
-
-    }
-
+    $('canvas').removeClass('show').addClass('hide');
     this.resetCursor();
 }
 
@@ -390,7 +385,8 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 let Player = function(spriteImg) {
-    this.stats = [];
+    this.points = 0;
+    this.stats;
     GamePiece.call(this, spriteImg, 5, 2);
     this.id = this.getID();
     this.imageComponent.x = CELL_WIDTH * 2;
@@ -411,27 +407,22 @@ Player.prototype.constructor = Player;
 Player.prototype.OFFSET_Y = -18; //-23
 
 Player.prototype.getLastStats= function() {
-    return this.stats[this.stats.length - 1];
-}
-
-Player.prototype.getStats = function() {
     return this.stats;
 }
 
 Player.prototype.addStats = function(gameEndParam) {
     let time = game.clockComponent.text;
     let points = game.scoreComponent.points;
+    this.points += points;
     let gameEnd = gameEndParam;
-    this.stats.push(
+    this.stats =
         {
             time: time,
             points: points,
             gameEnd: gameEnd,
-        });
-    console.log("before " + this.statsString);
+        };
     this.statsString = `${gameEnd}   ${time}  ${points} points\n` + this.statsString;
-    console.log("after " + this.statsString);
-    this.textAreaJQ.val(this.statsString);
+    this.textAreaJQ.val("TOTAL POINTS: " + this.points + "\n\n" + this.statsString);
 }
 
 Player.prototype.getID = function() {
@@ -615,8 +606,8 @@ let Game = function(global) {
 
     function attachButtonHandler() {
         $('.buttn').click(function() {
-            game.gameOverOverlayJQ.removeClass('show').addClass('hide');
-            game.canvasJQ.removeClass('hide').addClass('show');
+            game.gameOverOverlayJQ.removeClass('transparent').addClass('hide');
+            game.canvasJQ.removeClass('no-access').addClass('show');
             game.reset();
         })
     }
@@ -704,8 +695,8 @@ Game.prototype.processGameEnd = function(endType) {
     in ${stats.time}, ${endType === "WIN" ? stats.points : 0} points`);
     this.gameOverMessageJQ.text(endType === "WIN" ? "Congratulations! You won!":
         "Oh no!  You were squashed like a bug.");
-    this.canvasJQ.removeClass('show').addClass('hide');
-    this.gameOverOverlayJQ.removeClass('hide').addClass('show');
+    this.canvasJQ.removeClass('show').addClass('no-access');
+    this.gameOverOverlayJQ.removeClass('hide').addClass('transparent');
 }
 
 

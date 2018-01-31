@@ -43,32 +43,13 @@ body {
     display: none;
 }
 
-.menu {
-    width: 100%;
+.transparent {
+    opacity: .8;
+    z-index: 1;
 }
 
-.menu-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    background-color: #1ebb1e;
-    color: #ccc;
-}
-
-.menu-li {
-    padding-left: 5vw;
-    padding-right: 5vw;
-    display: inline;
-    border-right: 1px solid #ccc;
-}
-
-.menu-li:last-child {
-    border-right: none;
-}
-
-.menu-li:hover {
-    color: #fff;
-    cursor: pointer;
+.no-access {
+    z-index: -1;
 }
 
 .align-right {

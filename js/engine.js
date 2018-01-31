@@ -75,9 +75,9 @@ let game = new Game(this);
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-         cnt++;
-         if (!stop)
+         if (!stop) {
             win.requestAnimationFrame(main);
+        }
     }
 
     /* This function does some initial setup that should only occur once,
