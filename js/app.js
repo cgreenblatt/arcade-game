@@ -29,12 +29,24 @@ const PRIZE_IMAGES = [
     'images/Rock.png',
     'images/Star.png'];
 
+/**
+*  @constructor: Represents something to draw on the canvas at coordinates x,y
+* @param {number} x - The x coordinate of the component
+* @param {number} y - The y coordinate of the component
+*/
 let Component = function(x, y) {
-
         this.x = x;
         this.y = y;
 }
 
+/**
+* @constructor Represents something to draw on the canvas that is clickable
+* @param {string} color - The color of the component
+* @param {number} x - The x coordinate of the component
+* @param {number} y - The y coordinate of the component
+* @param {number} width - The width in pixels of the component
+* @param {number} height - The height in pixels of the component
+*/
 let ClickableComponent = function(color, x, y, width, height) {
     Component.call(this, x, y);
     this.color = color;
@@ -47,8 +59,13 @@ let ClickableComponent = function(color, x, y, width, height) {
 ClickableComponent.prototype = Object.create(Component.prototype);
 ClickableComponent.prototype.constructor = ClickableComponent;
 
+/**
+* @description Determines if this ClickableComponent should respond to the event parameter by
+    checking if the event occurred within its boundaries
+* @param {event} e - An event
+* @return {boolean} true if this ClickableComponent should respond to the event parameter
+*/
 ClickableComponent.prototype.isMyEvent = function(e) {
-
     if (e.offsetX < this.x ||
         e.offsetX > this.x + this.width ||
         e.offsetY < this.y ||
@@ -58,8 +75,12 @@ ClickableComponent.prototype.isMyEvent = function(e) {
         return true;
 }
 
+/**
+* @description Changes the cursor to a pointer if the cursor is over this ClickableComponent,
+    changes the cursor from a pointer to the default if the cursor moves off this ClickableComponent,
+* @param {event} e - A mousemove event
+*/
 ClickableComponent.prototype.cursorHandler = function(e) {
-
     let haveFocus = this.isMyEvent(e);
 
     if (haveFocus && !this.hadFocus) {
@@ -74,11 +95,14 @@ ClickableComponent.prototype.cursorHandler = function(e) {
     }
 }
 
-ClickableComponent.prototype.resetCursor = function() {
-    game.canvasJQ.removeClass( 'cursor-pointer' );
-    this.hadFocus = false;
-}
-
+/**
+* @constructor Represents a text component to draw on the canvas
+* @param {string} color - The color used to draw the component
+* @param {number} x - The x coordinate of the component
+* @param {number} y - The y coordinate of the component
+* @param {string} text - The text to draw
+* @param {string} font - The font used to draw the text
+*/
 let TextComponent = function(color, x, y, text, font) {
     Component.call(this, x, y);
     this.color = color;
@@ -89,14 +113,24 @@ let TextComponent = function(color, x, y, text, font) {
 TextComponent.prototype = Object.create(Component.prototype);
 TextComponent.prototype.constructor = TextComponent;
 
+/**
+* @description Draws this TextComponent on the canvas
+* @param: {object} ctx - The canvas rendering context object
+*/
 TextComponent.prototype.render = function(ctx) {
-
         ctx.font = this.font;
         ctx.fillStyle = this.color;
         ctx.textAlign = "center";
         ctx.fillText(this.text,this.x,this.y);
 }
 
+/**
+* @constructor Represents the score to draw on the canvas
+* @param {string} - The color used to draw the component
+* @param {x} x - The x coordinate of the component
+* @param {y} y - The y coordinate of the component
+* @param {string} font - The font used to draw the string
+*/
 let ScoreComponent = function(color, x, y, font) {
     TextComponent.call(this, color, x, y, "0 points", font);
     this.points = 0;
@@ -105,16 +139,30 @@ let ScoreComponent = function(color, x, y, font) {
 ScoreComponent.prototype = Object.create(TextComponent.prototype);
 ScoreComponent.prototype.constructor = ScoreComponent;
 
+/**
+* @description Updates the text for the score component
+* @param: {number} - The points to add to the player's score
+*/
 ScoreComponent.prototype.update = function(points) {
     this.points += points;
     this.text = this.points + " points";
 }
 
+/**
+* @description Resets the score text to "O points"
+*/
 ScoreComponent.prototype.reset = function() {
     this.points = 0;
     this.text = this.points + " points";
 }
 
+/**
+* @constructor Represents the score to draw on the canvas
+* @param {color} color - the color used to draw the score
+* @param {x} x - The x coordinate of the component
+* @param {y} y - The y coordinate of the component
+* @param {string} font - The font used to draw the score
+*/
 let ClockComponent = function(color, x, y, font) {
     TextComponent.call(this, color, x, y, "0.0 secs", font);
     this.startTime = new Date().getTime();
@@ -123,16 +171,29 @@ let ClockComponent = function(color, x, y, font) {
 ClockComponent.prototype = Object.create(TextComponent.prototype);
 ClockComponent.prototype.constructor = ClockComponent;
 
+/**
+* @description Resets the timer to "0.0 seconds"
+*/
 ClockComponent.prototype.reset = function() {
-    this.text = "0.0 secs"
+    this.text = "0.0 seconds"
     this.startTime = new Date().getTime();
 }
 
+/**
+* @description Updates the timer to the elapsed time
+*/
 ClockComponent.prototype.update = function() {
     this.elapsedTime = new Date().getTime() - this.startTime;
     this.text = ((this.elapsedTime/1000).toFixed(1) + " seconds") ;
 }
 
+/**
+* @constructor Represents a menu bar to draw on the canvas
+* @param {color} color - the color used to draw the score
+* @param {x} x - The x coordinate of the component
+* @param {y} y - The y coordinate of the component
+* @param {number} - The number of bars comprising the menu bar
+*/
 let MenuBarComponent = function(color, x, y, bars) {
     ClickableComponent.call(this, color, x, y, 40, 27);
     this.bars = bars;
@@ -162,7 +223,6 @@ MenuBarComponent.prototype.clickHandler = function(e) {
     Engine.stopEngine();
     $('.game-options').removeClass('hide').addClass('show');
     $('canvas').removeClass('show').addClass('hide');
-    this.resetCursor();
 }
 
 
