@@ -37,7 +37,7 @@ const PRIZE_IMAGES = [
 let Component = function(x, y) {
         this.x = x;
         this.y = y;
-}
+};
 
 /**
 * @constructor Represents something to draw on the canvas that is clickable
@@ -54,7 +54,7 @@ let ClickableComponent = function(color, x, y, width, height) {
     this.height = height;
     this.lineWidth = 5;
     this.hadFocus = false;
-}
+};
 
 ClickableComponent.prototype = Object.create(Component.prototype);
 ClickableComponent.prototype.constructor = ClickableComponent;
@@ -73,7 +73,7 @@ ClickableComponent.prototype.isMyEvent = function(e) {
         return false;
     else
         return true;
-}
+};
 
 /**
 * @description Changes the cursor to a pointer if the cursor is over this ClickableComponent,
@@ -93,7 +93,7 @@ ClickableComponent.prototype.cursorHandler = function(e) {
         game.canvasJQ.removeClass( 'cursor-pointer' );
         return;
     }
-}
+};
 
 /**
 * @constructor Represents a text component to draw on the canvas
@@ -108,7 +108,7 @@ let TextComponent = function(color, x, y, text, font) {
     this.color = color;
     this.text = text;
     this.font = font;
-}
+};
 
 TextComponent.prototype = Object.create(Component.prototype);
 TextComponent.prototype.constructor = TextComponent;
@@ -122,7 +122,7 @@ TextComponent.prototype.render = function(ctx) {
         ctx.fillStyle = this.color;
         ctx.textAlign = "center";
         ctx.fillText(this.text,this.x,this.y);
-}
+};
 
 /**
 * @constructor Represents the score to draw on the canvas
@@ -134,7 +134,7 @@ TextComponent.prototype.render = function(ctx) {
 let ScoreComponent = function(color, x, y, font) {
     TextComponent.call(this, color, x, y, "0 points", font);
     this.points = 0;
-}
+};
 
 ScoreComponent.prototype = Object.create(TextComponent.prototype);
 ScoreComponent.prototype.constructor = ScoreComponent;
@@ -146,7 +146,7 @@ ScoreComponent.prototype.constructor = ScoreComponent;
 ScoreComponent.prototype.update = function(points) {
     this.points += points;
     this.text = this.points + " points";
-}
+};
 
 /**
 * @description Resets the score text to "O points"
@@ -154,7 +154,7 @@ ScoreComponent.prototype.update = function(points) {
 ScoreComponent.prototype.reset = function() {
     this.points = 0;
     this.text = this.points + " points";
-}
+};
 
 /**
 * @constructor Represents the score to draw on the canvas
@@ -166,7 +166,7 @@ ScoreComponent.prototype.reset = function() {
 let ClockComponent = function(color, x, y, font) {
     TextComponent.call(this, color, x, y, "0.0 secs", font);
     this.startTime = new Date().getTime();
-}
+};
 
 ClockComponent.prototype = Object.create(TextComponent.prototype);
 ClockComponent.prototype.constructor = ClockComponent;
@@ -175,9 +175,9 @@ ClockComponent.prototype.constructor = ClockComponent;
 * @description Resets the timer to "0.0 seconds"
 */
 ClockComponent.prototype.reset = function() {
-    this.text = "0.0 seconds"
+    this.text = "0.0 seconds";
     this.startTime = new Date().getTime();
-}
+};
 
 /**
 * @description Updates the timer to the elapsed time
@@ -185,7 +185,7 @@ ClockComponent.prototype.reset = function() {
 ClockComponent.prototype.update = function() {
     this.elapsedTime = new Date().getTime() - this.startTime;
     this.text = ((this.elapsedTime/1000).toFixed(1) + " seconds") ;
-}
+};
 
 /**
 * @constructor Represents a menu bar to draw on the canvas
@@ -198,7 +198,7 @@ let MenuBarComponent = function(color, x, y, bars) {
     ClickableComponent.call(this, color, x, y, 40, 27);
     this.bars = bars;
     this.space = 6;
-}
+};
 
 MenuBarComponent.prototype = Object.create(ClickableComponent.prototype);
 MenuBarComponent.prototype.constructor = MenuBarComponent;
@@ -218,7 +218,7 @@ MenuBarComponent.prototype.render = function(ctx) {
         ctx.stroke();
         y += this.lineWidth + this.space;
     }
-}
+};
 
 /**
 * @description Click handler for the menu bar that stops the Engine and displays the player options
@@ -228,9 +228,9 @@ MenuBarComponent.prototype.clickHandler = function(e) {
     if (!this.isMyEvent(e))
         return;
     Engine.stopEngine("INTERRUPT");
-    $('.game-options').removeClass('hide').addClass('show');
-    $('canvas').removeClass('show').addClass('hide');
-}
+    $(' .game-options ').removeClass( 'hide' ).addClass( 'show' );
+    $(' canvas ').removeClass( 'show' ).addClass( 'hide' );
+};
 
 /**
 * @constructor Represents a restart button to draw on the canvas
@@ -242,7 +242,7 @@ MenuBarComponent.prototype.clickHandler = function(e) {
 let RestartComponent = function(color, x, y, radius) {
     ClickableComponent.call(this, color, x, y, radius * 2, radius * 2);
     this.radius = radius;
-}
+};
 
 RestartComponent.prototype = Object.create(ClickableComponent.prototype);
 RestartComponent.prototype.constructor = RestartComponent;
@@ -265,13 +265,13 @@ RestartComponent.prototype.render = function(ctx) {
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(x + radius * .65, y);
+    ctx.moveTo(x + radius * 0.65, y);
     ctx.lineTo(x + 1.35 * radius, y);
     ctx.lineTo(x + radius, y + radius/2);
-    ctx.lineTo(x + radius * .65, y);
+    ctx.lineTo(x + radius * 0.65, y);
     ctx.closePath();
     ctx.fill();
-}
+};
 
 /**
 * @description Click handler for the restart button restarts the game
@@ -280,7 +280,7 @@ RestartComponent.prototype.render = function(ctx) {
 RestartComponent.prototype.clickHandler = function(e) {
     if (!this.isMyEvent(e)) return;
     game.reset();
-}
+};
 
 /**
 * @constructor Represents an image to draw on the canvas
@@ -291,7 +291,7 @@ RestartComponent.prototype.clickHandler = function(e) {
 let ImageComponent = function(image, x, y) {
     Component.call(this, x, y);
     this.image = image;
-}
+};
 
 ImageComponent.prototype = Object.create(Component.prototype);
 ImageComponent.prototype.constructor = ImageComponent;
@@ -302,7 +302,7 @@ ImageComponent.prototype.constructor = ImageComponent;
 */
 ImageComponent.prototype.render = function(ctx) {
     ctx.drawImage(Resources.get(this.image), this.x, this.y);
-}
+};
 
 /**
 * @constructor Represents a game piece
@@ -314,7 +314,7 @@ let  GamePiece = function(image, row=0, col=0) {
     this.imageComponent = new ImageComponent(image, col * CELL_WIDTH, row * CELL_HEIGHT);
     this.row = row;
     this.col = col;
-}
+};
 
 /**
 * @description Returns the current location of the game piece in an object with properties row, col
@@ -324,7 +324,7 @@ GamePiece.prototype.getCell = function() {
         row: this.row,
         col: this.col,
     };
-}
+};
 
 /**
 * @description Returns a random integer between min (inclusive) and max (inclusive)
@@ -334,7 +334,7 @@ GamePiece.prototype.getCell = function() {
 */
 GamePiece.prototype.getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
 /**
 * @description Draws the game piece on the canvas
@@ -342,7 +342,7 @@ GamePiece.prototype.getRandomInt = function(min, max) {
 */
 GamePiece.prototype.render = function(ctx) {
     this.imageComponent.render(ctx);
-}
+};
 
 /**
 * @constructor Represents the game board
@@ -355,7 +355,7 @@ let Board = function() {
                 this.board[row][col] = 0;
         }
     }
-}
+};
 
 /**
 * @description Resets the board to the initial state
@@ -366,7 +366,7 @@ Board.prototype.reset = function() {
                 this.board[row][col] = 0;
         }
     }
-}
+};
 
 /**
 * @description Assigns a prize to a random board location and returns the assigned location in an
@@ -385,7 +385,7 @@ Board.prototype.assignUnoccupiedCell = function(prize) {
         }
     }
     return {row, col};
-}
+};
 
 /**
 * @description Returns whatever occupies the given cell's location
@@ -393,7 +393,7 @@ Board.prototype.assignUnoccupiedCell = function(prize) {
 */
 Board.prototype.getCellOccupant = function(cell) {
     return (this.board[cell.row - 1][cell.col]);
-}
+};
 
 /**
 * @description Removes occupant from specified row, col
@@ -402,7 +402,7 @@ Board.prototype.getCellOccupant = function(cell) {
 */
 Board.prototype.remove = function(row, col) {
     this.board[row - 1][col] = 0;
-}
+};
 
 /**
 * @constructor Represents a prize
@@ -416,8 +416,8 @@ let Prize = function(image, points, width) {
     this.points = points;
     this.width = width;
     this.imageComponent.y += Prize.prototype.OFFSET_Y;
-    this.imageComponent.x += ((CELL_WIDTH - width) * .5);
- }
+    this.imageComponent.x += ((CELL_WIDTH - width) * 0.5);
+ };
 
 Prize.prototype = Object.create(GamePiece.prototype);
 Prize.prototype.constructor = Prize;
@@ -438,15 +438,15 @@ Prize.prototype.reset = function() {
     this.imageComponent.x = this.col * CELL_WIDTH;
     this.imageComponent.y = this.row * CELL_HEIGHT;
     this.imageComponent.y += Prize.prototype.OFFSET_Y;
-    this.imageComponent.x += ((CELL_WIDTH - this.width) * .5);
-}
+    this.imageComponent.x += ((CELL_WIDTH - this.width) * 0.5);
+};
 
 /**
 * @description Removes this prize from the game board
 */
 Prize.prototype.removeFromBoard = function() {
     this.board.remove(this.row, this.col);
-}
+};
 
 /**
 * @constructor Represents an enemy
@@ -460,7 +460,7 @@ let Enemy = function() {
     this.imageComponent.y -= Enemy.prototype.OFFSET_Y;
     this.rate = this.getRandomRate();
     this.id = Enemy.prototype.enemyCnt++;
-}
+};
 
 Enemy.prototype = Object.create(GamePiece.prototype);
 Enemy.prototype.constructor = Enemy;
@@ -474,21 +474,21 @@ Enemy.prototype.OFFSET_Y = 20;
 Enemy.prototype.reset = function() {
         this.imageComponent.x = this.getRandomXOffset();
         this.rate = this.getRandomRate();
-}
+};
 
 /**
 * @description Returns a random row between 1 and 3
 */
 Enemy.prototype.getRandomRow = function() {
     return GamePiece.prototype.getRandomInt(1, ENEMY_ROWS);
-}
+};
 
 /**
 * @description Returns a random y position
 */
 Enemy.prototype.getNewY = function(row) {
     return row * CELL_HEIGHT - Enemy.prototype.OFFSET_Y;
-}
+};
 
 /**
 * @description Returns the cell the enemy currently occupies in an
@@ -498,21 +498,21 @@ Enemy.prototype.getCell = function() {
     return {
         row: this.row,
         col: Math.round(this.imageComponent.x/CELL_WIDTH)};
-}
+};
 
 /**
 * @description Returns a negative random offset between 0 and 1000 inclusive
 */
 Enemy.prototype.getRandomXOffset = function() {
     return -(this.getRandomInt(0, 1000));
-}
+};
 
 /**
 * @description Returns a random rate
 */
 Enemy.prototype.getRandomRate = function() {
     return 50 + this.getRandomInt(0, 300);
-}
+};
 
 /**
 * @description - Updates the enemy position
@@ -535,19 +535,18 @@ Enemy.prototype.update = function(dt) {
         // get new rate of speed
         this.rate = this.getRandomRate();
     }
-}
+};
 
 /**
 * @constructor Represents a player
 */
 let Player = function(spriteImg) {
     this.points = 0;
-    this.stats;
     GamePiece.call(this, spriteImg, 5, 2);
     this.id = this.getID();
     this.imageComponent.x = CELL_WIDTH * 2;
     this.imageComponent.y += Player.prototype.OFFSET_Y;
-    this.playerJQ = $('.players-li').has(`img[src*='${spriteImg}']`);
+    this.playerJQ = $( '.players-li' ).has( `img[src*='${spriteImg}']` );
     this.playerImgJQ = this.playerJQ.children('img');
     this.textAreaJQ = this.playerJQ.children('textarea');
     this.textAreaJQ.attr('readonly','readonly');
@@ -555,7 +554,7 @@ let Player = function(spriteImg) {
     this.playerJQ.click(this.getClickHandler(this));
     this.playerJQ.hover(this.getHoverHandlerIn(this), this.getHoverHandlerOut(this));
     this.statsString = '';
-}
+};
 
 Player.prototype = Object.create(GamePiece.prototype);
 Player.prototype.constructor = Player;
@@ -567,7 +566,7 @@ Player.prototype.OFFSET_Y = -18; //-23
 */
 Player.prototype.getLastStats = function() {
     return this.stats;
-}
+};
 
 /**
 * @description - Stores last game stats for player and adds text to the player info html
@@ -585,7 +584,7 @@ Player.prototype.addStats = function(gameEndParam) {
         };
     this.statsString = `${gameEnd}   ${time}  ${points} points\n` + this.statsString;
     this.textAreaJQ.val("TOTAL POINTS: " + this.points + "\n\n" + this.statsString);
-}
+};
 
 /**
 * @description Returns an integer based on the current count of players
@@ -594,8 +593,8 @@ Player.prototype.getID = function() {
     let cnt = 0;
     return function() {
         return cnt++;
-    }
-}
+    };
+};
 
 /**
 * @description Resets the player to initial position
@@ -607,7 +606,7 @@ Player.prototype.reset = function() {
     this.imageComponent.y = this.row * CELL_HEIGHT;
     this.imageComponent.x = CELL_WIDTH * 2;
     this.imageComponent.y += Player.prototype.OFFSET_Y;
-}
+};
 
 /**
 * @description Draws this player on the canvas
@@ -615,7 +614,7 @@ Player.prototype.reset = function() {
 */
 Player.prototype.render = function(ctx) {
     this.imageComponent.render(ctx);
-}
+};
 
 /**
 * @description Adds player-selected style to player img and textarea html elements
@@ -623,7 +622,7 @@ Player.prototype.render = function(ctx) {
 Player.prototype.deselect = function() {
     this.playerImgJQ.removeClass('player-selected');
     this.textAreaJQ.removeClass('player-selected');
-}
+};
 
 /**
 * @description Removes player-selected style from player img and textarea html elements
@@ -631,7 +630,7 @@ Player.prototype.deselect = function() {
 Player.prototype.select = function() {
     this.playerImgJQ.addClass('player-selected');
     this.textAreaJQ.addClass('player-selected');
-}
+};
 
 /**
 * @description Returns hover handler for player, handler adds class 'player-img-hover' to
@@ -643,9 +642,9 @@ Player.prototype.getHoverHandlerIn = function(player) {
         if (game.player === player)
             return;
         player.playerImgJQ.addClass('player-img-hover');
-        player.textAreaJQ.addClass('player-img-hover')
-    }
-}
+        player.textAreaJQ.addClass('player-img-hover');
+    };
+};
 
 /**
 * @description Returns hover handler for player, handler removes class 'player-img-hover' from
@@ -656,8 +655,8 @@ Player.prototype.getHoverHandlerOut = function(player) {
     return function() {
         player.playerImgJQ.removeClass('player-img-hover');
         player.textAreaJQ.removeClass('player-img-hover');
-    }
-}
+    };
+};
 
 /**
 * @description Handles arrow key input for moving player on board
@@ -692,7 +691,7 @@ Player.prototype.move = function(key) {
             }
             break;
     }
-}
+};
 
 /**
 * @description Returns click handler function for player; function sets the current game player
@@ -701,8 +700,8 @@ Player.prototype.move = function(key) {
 Player.prototype.getClickHandler = function(player) {
     return function() {
         game.setPlayer(player);
-    }
-}
+    };
+};
 
 /**
 * @constructor Represents the game
@@ -715,7 +714,7 @@ let Game = function(global) {
             gameOptionsJQ.removeClass( 'show' ).addClass( 'hide' );
             canvasJQ.removeClass( 'hide' ).addClass( 'show' );
             Engine.init();
-        }
+        };
     }
 
     function attachCloseIconClickHandler(closeIconJQ, canvasJQ, gameOptionsJQ) {
@@ -788,19 +787,19 @@ let Game = function(global) {
     * @description attach button handler to play again button
     */
     function attachButtonHandler() {
-        $('.buttn').click(function() {
-            game.gameOverOverlayJQ.removeClass('transparent').addClass('hide');
-            game.canvasJQ.removeClass('no-access').addClass('show');
+        $( '.buttn' ).click(function() {
+            game.gameOverOverlayJQ.removeClass( 'transparent' ).addClass( 'hide' );
+            game.canvasJQ.removeClass( 'no-access' ).addClass( 'show' );
             game.reset();
-        })
+        });
     }
 
     this.renderables = [];
     this.updateables = [];
     this.prizes = [];
-    this.gameOverOverlayJQ = $('.game-over-overlay');
-    this.gameOverMessageJQ = $('.game-over-message');
-    this.winDataJQ = $('.win-data');
+    this.gameOverOverlayJQ = $(' .game-over-overlay ');
+    this.gameOverMessageJQ = $(' .game-over-message ');
+    this.winDataJQ = $(' .win-data ');
     this.restartComponent = new RestartComponent("#1ebb1e", 5, 16, 13);
     this.renderables.push(this.restartComponent);
     this.menuBarComponent = new MenuBarComponent("#1ebb1e", CANVAS_WIDTH - 45, 20, 3);
@@ -820,11 +819,11 @@ let Game = function(global) {
     this.scoreComponent = new ScoreComponent("#ccc", CANVAS_WIDTH - CELL_WIDTH, 40, "15px Comic Sans ms");
     this.renderables.push(this.scoreComponent);
     this.canvas = createCanvas();
-    this.canvasJQ = $('canvas');
+    this.canvasJQ = $( 'canvas' );
     attachCloseIconClickHandler($( '.close-x' ), this.canvasJQ, $( '.game-options' ));
     attachButtonHandler();
 
-    document.addEventListener('keyup', function(e) {
+    document.addEventListener( 'keyup' , function(e) {
         var allowedKeys = {
             37: 'left',
             38: 'up',
@@ -833,28 +832,28 @@ let Game = function(global) {
         };
         game.player.move(allowedKeys[e.keyCode]);
     });
-}
+};
 
 /**
 * @description Returns game renderables
 */
 Game.prototype.getRenderables = function() {
     return this.renderables;
-}
+};
 
 /**
 * @description Returns game updateables
 */
 Game.prototype.getUpdateables = function() {
     return this.updateables;
-}
+};
 
 /**
 * @description Returns canvas
 */
 Game.prototype.getCanvas = function() {
     return this.canvas;
-}
+};
 
 /**
 * @description Sets the current game player
@@ -871,14 +870,14 @@ Game.prototype.setPlayer = function(player) {
     this.player.select();
     this.renderables.push(this.player);
     this.reset();
-}
+};
 
 /**
 * @description Returns the array of enemies
 */
 Game.prototype.getEnemies = function() {
     return this.enemies;
-}
+};
 
 /**
 * @description Displays game won overlay with game stats
@@ -894,7 +893,7 @@ Game.prototype.processGameEnd = function(endType) {
         "Oh no!  You were squashed like a bug.");
     this.canvasJQ.removeClass('show').addClass('no-access');
     this.gameOverOverlayJQ.removeClass('hide').addClass('transparent');
-}
+};
 
 /**
 * @description Sets up a new game
@@ -914,14 +913,14 @@ Game.prototype.reset = function() {
     for (let i = 0; i < this.enemies.length; i++)
         this.enemies[i].reset();
     Engine.init();
-}
+};
 
 /**
 * @description Returns the current player
 */
 Game.prototype.getPlayer = function() {
     return this.player;
-}
+};
 
 /**
 * @description Removes captured prize from board and updates player score
@@ -931,6 +930,6 @@ Game.prototype.processCapturedPrize = function(prize) {
     this.renderables.splice(index, 1);
     prize.removeFromBoard();
     this.scoreComponent.update(prize.points);
-}
+};
 
 
