@@ -12,40 +12,24 @@
  * This engine makes the canvas' context (ctx) object globally available to make
  * writing app.js a little simpler to work with.
  */
-
-
-
 let game = new Game(this);
 
 
 (function(global) {
+
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
-
-
-
     let win = global.window,
         canvas = game.getCanvas(),
         ctx = canvas.getContext('2d'),
         lastTime,
         player;
 
-
-
-
     let allEnemies = game.getEnemies();
-    console.log("allEnemies");
-    console.log(allEnemies);
-  /*  let menu = game.getMenuBar();
-    let title = game.getTitle();
-    let restart = game.getRestartButton();
-    let clock = game.clockComponent;*/
     let renderables = game.getRenderables();
     let updateables = game.getUpdateables();
-
-    let cnt = 0;
     let stop = false;
 
     /* This function serves as the kickoff point for the game loop itself
@@ -77,6 +61,8 @@ let game = new Game(this);
          */
          if (!stop) {
             win.requestAnimationFrame(main);
+        } else  if (stop === "WIN" || stop === "LOSS") {
+            game.processGameEnd(stop);
         }
     }
 
@@ -85,18 +71,18 @@ let game = new Game(this);
      * game loop.
      */
     function init() {
-        console.log("in init");
         reset();
         player = game.getPlayer();
         lastTime = Date.now();
         main();
     }
 
-    function stopEngine() {
-        console.log("stop before assignment is " + stop);
-        stop = true;
-        console.log("in stop engine after assignment stop is " + stop);
-        console.log(this);
+    /**
+    * @description Stops engine
+    * @param {string} stopReason "WIN" "LOSS" or "INTERRUPT"
+    */
+    function stopEngine(stopReason) {
+        stop = stopReason;
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -113,51 +99,39 @@ let game = new Game(this);
         let cell = player.getCell();
         // don't check for collisions or prizes if player is not in enemy rows
         if (cell.row < 1 || cell.row > ENEMY_ROWS) return;
-
-        if (collision(cell))
-           game.processGameEnd("LOSS");
-       else
+        if (collision(cell)) {
+            stop = "LOSS";
+        } else {
             checkPrizeCapture(cell);
-
+        }
     }
 
-function checkPrizeCapture(cell) {
-
-    let prize = Prize.prototype.board.getCellOccupant(cell);
-    if (prize) {
-        game.processCapturedPrize(prize);
+    /**
+    * @description Checks if player has moved into cell with prize and sends message to game if
+    *   a prize has been captured
+    */
+    function checkPrizeCapture(cell) {
+        let prize = Prize.prototype.board.getCellOccupant(cell);
+        if (prize) {
+            game.processCapturedPrize(prize);
+        }
     }
-}
 
-
-function collision(playerCell) {
-
-
+    /**
+    * @description Checks if there is a collision, returns true or false
+    * @param {CELL} playerCell - current cell occupied by player
+    */
+    function collision(playerCell) {
         // check enemy that occupies same row as player
         let enemyIndex = playerCell.row - 1;
         let enemyCell = allEnemies[enemyIndex].getCell();
-console.log(allEnemies[enemyIndex]);
-                console.log(allEnemies[enemyIndex].getCell());
-                console.log(player);
-                console.log(player.getCell());
-
         if ((enemyCell.row === playerCell.row) && (enemyCell.col === playerCell.col)) {
-                                console.log("collision1");
-                console.log(allEnemies[enemyIndex]);
-                console.log(allEnemies[enemyIndex].getCell());
-                console.log(player);
-                console.log(player.getCell());
                 return true;
         }
-
         // check enemies that are assigned to random rows
         for (let i = ENEMY_ROWS; i < allEnemies.length; i++) {
             enemyCell = allEnemies[i].getCell();
             if ((enemyCell.row === playerCell.row) && (enemyCell.col === playerCell.col)) {
-                console.log("collision2");
-                console.log(allEnemies[i]);
-                console.log(allEnemies[i].getCell());
-                console.log(playerCell);
                 return true;
             }
         }
@@ -177,8 +151,6 @@ console.log(allEnemies[enemyIndex]);
         });
         for (let i = 0; i < updateables.length; i++)
             updateables[i].update();
-       //player.update();
-       //clock.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -204,8 +176,6 @@ console.log(allEnemies[enemyIndex]);
         // Before drawing, clear existing canvas
         ctx.clearRect(0,0,canvas.width,canvas.height)
 
-        //ctx.fillRect(0, 0, canvas.width,canvas.height);
-
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
@@ -223,8 +193,6 @@ console.log(allEnemies[enemyIndex]);
                 ctx.drawImage(Resources.get(rowImages[row]), col * CELL_WIDTH, row * CELL_HEIGHT);
             }
         }
-
-
         renderEntities();
     }
 
@@ -244,9 +212,7 @@ console.log(allEnemies[enemyIndex]);
             renderables[i].render(ctx);
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
+    /* This function resets the game
      */
     function reset() {
         stop = false;

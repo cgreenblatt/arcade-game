@@ -30,7 +30,7 @@ const PRIZE_IMAGES = [
     'images/Star.png'];
 
 /**
-*  @constructor: Represents something to draw on the canvas at coordinates x,y
+*  @constructor: Represents something to draw on the canvas at coordinates x, y
 * @param {number} x - The x coordinate of the component
 * @param {number} y - The y coordinate of the component
 */
@@ -203,6 +203,10 @@ let MenuBarComponent = function(color, x, y, bars) {
 MenuBarComponent.prototype = Object.create(ClickableComponent.prototype);
 MenuBarComponent.prototype.constructor = MenuBarComponent;
 
+/**
+* @description Draws the menu bar on the canvas
+* @param {object} ctx - The canvas rendering context object
+*/
 MenuBarComponent.prototype.render = function(ctx) {
 
     ctx.strokeStyle = this.color;
@@ -216,16 +220,25 @@ MenuBarComponent.prototype.render = function(ctx) {
     }
 }
 
+/**
+* @description Click handler for the menu bar that stops the Engine and displays the player options
+* @param {event} e - The event object
+*/
 MenuBarComponent.prototype.clickHandler = function(e) {
-
     if (!this.isMyEvent(e))
         return;
-    Engine.stopEngine();
+    Engine.stopEngine("INTERRUPT");
     $('.game-options').removeClass('hide').addClass('show');
     $('canvas').removeClass('show').addClass('hide');
 }
 
-
+/**
+* @constructor Represents a restart button to draw on the canvas
+* @param {string} color - The color used to draw the restart button
+* @param {x} x - The x coordinate of the component
+* @param {y} y - The y coordinate of the component
+* @param {number} radius - The radius of the restart button
+*/
 let RestartComponent = function(color, x, y, radius) {
     ClickableComponent.call(this, color, x, y, radius * 2, radius * 2);
     this.radius = radius;
@@ -234,6 +247,10 @@ let RestartComponent = function(color, x, y, radius) {
 RestartComponent.prototype = Object.create(ClickableComponent.prototype);
 RestartComponent.prototype.constructor = RestartComponent;
 
+/**
+* @description Draws a restart button on the canvas
+* @param {object} ctx - The canvas rendering context object
+*/
 RestartComponent.prototype.render = function(ctx) {
 
     let radius = this.radius;
@@ -256,13 +273,21 @@ RestartComponent.prototype.render = function(ctx) {
     ctx.fill();
 }
 
+/**
+* @description Click handler for the restart button restarts the game
+* @param {event} e - An event object
+*/
 RestartComponent.prototype.clickHandler = function(e) {
-
     if (!this.isMyEvent(e)) return;
-    game.reset("interrupt");
-
+    game.reset();
 }
 
+/**
+* @constructor Represents an image to draw on the canvas
+* @param {string} image - The image to draw on canvas
+* @param {x} x - The x coordinate of the component
+* @param {y} y - The y coordinate of the component
+*/
 let ImageComponent = function(image, x, y) {
     Component.call(this, x, y);
     this.image = image;
@@ -271,16 +296,29 @@ let ImageComponent = function(image, x, y) {
 ImageComponent.prototype = Object.create(Component.prototype);
 ImageComponent.prototype.constructor = ImageComponent;
 
+/**
+* @description Draws the image on the canvas
+* @param {object} ctx - The canvas rendering context object
+*/
 ImageComponent.prototype.render = function(ctx) {
     ctx.drawImage(Resources.get(this.image), this.x, this.y);
 }
 
+/**
+* @constructor Represents a game piece
+* @param {string} image - The image to draw on the canvas
+* @param {integer} row - The row on board where the image is drawn
+* @param {integer} col - The column on board where the image is drawn
+*/
 let  GamePiece = function(image, row=0, col=0) {
     this.imageComponent = new ImageComponent(image, col * CELL_WIDTH, row * CELL_HEIGHT);
     this.row = row;
     this.col = col;
 }
 
+/**
+* @description Returns the current location of the game piece in an object with properties row, col
+*/
 GamePiece.prototype.getCell = function() {
     return {
         row: this.row,
@@ -288,17 +326,28 @@ GamePiece.prototype.getCell = function() {
     };
 }
 
-// stackoverflow 1527803
+/**
+* @description Returns a random integer between min (inclusive) and max (inclusive)
+*  stackoverflow 1527803
+* @param {integer} min - minimum integer to return
+* @param {integer} max - maximum integer to return
+*/
 GamePiece.prototype.getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+* @description Draws the game piece on the canvas
+* @param {object} ctx - The canvas rendering context object
+*/
 GamePiece.prototype.render = function(ctx) {
     this.imageComponent.render(ctx);
 }
 
+/**
+* @constructor Represents the game board
+*/
 let Board = function() {
-
     this.board = [];
     for (let row = 0; row < ENEMY_ROWS; row++) {
         this.board[row] = [];
@@ -308,6 +357,9 @@ let Board = function() {
     }
 }
 
+/**
+* @description Resets the board to the initial state
+*/
 Board.prototype.reset = function() {
         for (let row = 0; row < ENEMY_ROWS; row++) {
             for (let col = 0; col < COLS; col++) {
@@ -316,33 +368,50 @@ Board.prototype.reset = function() {
     }
 }
 
-Board.prototype.getUnoccupiedCell = function(prize) {
-
+/**
+* @description Assigns a prize to a random board location and returns the assigned location in an
+*   object with properties row, col
+* @param {Prize} prize - The prize to assign to the board location
+*/
+Board.prototype.assignUnoccupiedCell = function(prize) {
     let done = false;
     let row, col;
-
     while (!done) {
-        row = GamePiece.prototype.getRandomInt(0,ENEMY_ROWS - 1);
-        col = GamePiece.prototype.getRandomInt(0,COLS - 1);
-        if (this.board[row][col] === 0) {
+        row = GamePiece.prototype.getRandomInt(1, ENEMY_ROWS);
+        col = GamePiece.prototype.getRandomInt(0, COLS - 1);
+        if (this.board[row -1 ][col] === 0) {
             done = true;
-            this.board[row][col] = prize;
+            this.board[row - 1][col] = prize;
         }
     }
-    row++;
     return {row, col};
 }
 
+/**
+* @description Returns whatever occupies the given cell's location
+* @param {Object {row: row, col: col}} cell - the cell
+*/
 Board.prototype.getCellOccupant = function(cell) {
     return (this.board[cell.row - 1][cell.col]);
 }
 
+/**
+* @description Removes occupant from specified row, col
+* @param {integer} row - the row
+* @param {integer} col - the column
+*/
 Board.prototype.remove = function(row, col) {
     this.board[row - 1][col] = 0;
 }
 
+/**
+* @constructor Represents a prize
+* @param {string} img - image for prize
+* @param {integer} points - points assigned to the prize
+* @param {integer} width - width in pixels of prize image
+*/
 let Prize = function(image, points, width) {
-    let cell = this.board.getUnoccupiedCell(this);
+    let cell = this.board.assignUnoccupiedCell(this);
     GamePiece.call(this, image, cell.row, cell.col);
     this.points = points;
     this.width = width;
@@ -355,12 +424,15 @@ Prize.prototype.constructor = Prize;
 Prize.prototype.OFFSET_Y = 50;
 Prize.prototype.board = new Board();
 
+/**
+* @description assigns new random location to prize
+*/
 Prize.prototype.reset = function() {
     // if prize has been captured and removed from renderables, put back in
     let renderables = game.getRenderables();
     if (renderables.indexOf(this) === -1)
         renderables.push(this);
-    let cell = this.board.getUnoccupiedCell(this);
+    let cell = this.board.assignUnoccupiedCell(this);
     this.row = cell.row;
     this.col = cell.col;
     this.imageComponent.x = this.col * CELL_WIDTH;
@@ -369,11 +441,16 @@ Prize.prototype.reset = function() {
     this.imageComponent.x += ((CELL_WIDTH - this.width) * .5);
 }
 
+/**
+* @description Removes this prize from the game board
+*/
 Prize.prototype.removeFromBoard = function() {
     this.board.remove(this.row, this.col);
 }
 
-// Enemies our player must avoid
+/**
+* @constructor Represents an enemy
+*/
 let Enemy = function() {
    GamePiece.call(this,
         'images/enemy-bug.png',
@@ -387,42 +464,60 @@ let Enemy = function() {
 
 Enemy.prototype = Object.create(GamePiece.prototype);
 Enemy.prototype.constructor = Enemy;
-
 Enemy.prototype.enemyCnt = 1;
 Enemy.prototype.OFFSET_Y = 20;
 
+/**
+* @description Resets enemy x position to a random negative number and resets enemy travel rate
+* to a random rate
+*/
 Enemy.prototype.reset = function() {
         this.imageComponent.x = this.getRandomXOffset();
         this.rate = this.getRandomRate();
 }
 
+/**
+* @description Returns a random row between 1 and 3
+*/
 Enemy.prototype.getRandomRow = function() {
-
     return GamePiece.prototype.getRandomInt(1, ENEMY_ROWS);
 }
 
+/**
+* @description Returns a random y position
+*/
 Enemy.prototype.getNewY = function(row) {
-
     return row * CELL_HEIGHT - Enemy.prototype.OFFSET_Y;
 }
 
+/**
+* @description Returns the cell the enemy currently occupies in an
+*   object with properties row, col
+*/
 Enemy.prototype.getCell = function() {
     return {
         row: this.row,
         col: Math.round(this.imageComponent.x/CELL_WIDTH)};
 }
 
+/**
+* @description Returns a negative random offset between 0 and 1000 inclusive
+*/
 Enemy.prototype.getRandomXOffset = function() {
     return -(this.getRandomInt(0, 1000));
 }
 
+/**
+* @description Returns a random rate
+*/
 Enemy.prototype.getRandomRate = function() {
     return 50 + this.getRandomInt(0, 300);
 }
 
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
+/**
+* @description - Updates the enemy position
+* @param {number} dt - Time difference between ticks
+*/
 Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
@@ -436,14 +531,15 @@ Enemy.prototype.update = function(dt) {
             this.row = this.getRandomRow();
             // get new y position based on new random row
             this.imageComponent.y = this.getNewY(this.row);
-            console.log(" y is " + this.imageComponent.y);
         }
         // get new rate of speed
         this.rate = this.getRandomRate();
     }
 }
 
-// Draw the enemy on the screen, required method for game
+/**
+* @constructor Represents a player
+*/
 let Player = function(spriteImg) {
     this.points = 0;
     this.stats;
@@ -463,13 +559,19 @@ let Player = function(spriteImg) {
 
 Player.prototype = Object.create(GamePiece.prototype);
 Player.prototype.constructor = Player;
-
 Player.prototype.OFFSET_Y = -18; //-23
 
-Player.prototype.getLastStats= function() {
+/**
+* @description - Returns the game stats for the last game in object with properties
+* time, points, gameEnd
+*/
+Player.prototype.getLastStats = function() {
     return this.stats;
 }
 
+/**
+* @description - Stores last game stats for player and adds text to the player info html
+*/
 Player.prototype.addStats = function(gameEndParam) {
     let time = game.clockComponent.text;
     let points = game.scoreComponent.points;
@@ -485,12 +587,19 @@ Player.prototype.addStats = function(gameEndParam) {
     this.textAreaJQ.val("TOTAL POINTS: " + this.points + "\n\n" + this.statsString);
 }
 
+/**
+* @description Returns an integer based on the current count of players
+*/
 Player.prototype.getID = function() {
-
     let cnt = 0;
-    return function() {return cnt++;}
+    return function() {
+        return cnt++;
+    }
 }
 
+/**
+* @description Resets the player to initial position
+*/
 Player.prototype.reset = function() {
     this.row = 5;
     this.col = 2;
@@ -500,30 +609,36 @@ Player.prototype.reset = function() {
     this.imageComponent.y += Player.prototype.OFFSET_Y;
 }
 
+/**
+* @description Draws this player on the canvas
+* @param: {object} ctx - The canvas rendering context object
+*/
 Player.prototype.render = function(ctx) {
     this.imageComponent.render(ctx);
-
 }
 
-Player.prototype.update = function() {}
-
+/**
+* @description Adds player-selected style to player img and textarea html elements
+*/
 Player.prototype.deselect = function() {
     this.playerImgJQ.removeClass('player-selected');
     this.textAreaJQ.removeClass('player-selected');
-    let index = game.renderables.indexOf(this);
-    game.renderables.splice(index,1);
 }
 
+/**
+* @description Removes player-selected style from player img and textarea html elements
+*/
 Player.prototype.select = function() {
     this.playerImgJQ.addClass('player-selected');
     this.textAreaJQ.addClass('player-selected');
-    game.renderables.push(this);
-    game.player = this;
 }
 
-
+/**
+* @description Returns hover handler for player, handler adds class 'player-img-hover' to
+*   player img and textarea elements on cursor entry if the player is not the current player
+* @param {Player} player - Player object
+*/
 Player.prototype.getHoverHandlerIn = function(player) {
-
     return function() {
         if (game.player === player)
             return;
@@ -532,17 +647,22 @@ Player.prototype.getHoverHandlerIn = function(player) {
     }
 }
 
+/**
+* @description Returns hover handler for player, handler removes class 'player-img-hover' from
+*   player img and textarea elements on cursor exit
+* @param {Player} player - Player object
+*/
 Player.prototype.getHoverHandlerOut = function(player) {
-
     return function() {
         player.playerImgJQ.removeClass('player-img-hover');
         player.textAreaJQ.removeClass('player-img-hover');
     }
 }
 
-
-Player.prototype.handleInput = function(key) {
-
+/**
+* @description Handles arrow key input for moving player on board
+*/
+Player.prototype.move = function(key) {
     switch(key) {
         case 'left':
             if (this.col > 0) {
@@ -555,7 +675,7 @@ Player.prototype.handleInput = function(key) {
                 this.imageComponent.y -= CELL_HEIGHT;
                 this.row--;
                 if (this.row === 0) {
-                    game.processGameEnd("WIN");
+                    Engine.stopEngine("WIN");
                 }
             }
             break;
@@ -564,7 +684,6 @@ Player.prototype.handleInput = function(key) {
                 this.imageComponent.x += CELL_WIDTH;
                 this.col++;
             }
-
             break;
         case 'down':
             if (this.row < 5) {
@@ -573,44 +692,40 @@ Player.prototype.handleInput = function(key) {
             }
             break;
     }
-
 }
 
-
+/**
+* @description Returns click handler function for player; function sets the current game player
+*  to this player
+*/
 Player.prototype.getClickHandler = function(player) {
-
     return function() {
         game.setPlayer(player);
     }
-
 }
 
-
+/**
+* @constructor Represents the game
+* @param {object} global - global scope object
+*/
 let Game = function(global) {
 
-    function attachCloseIconHandler() {
-        closeIconJQ = $( '.close-x');
-        closeIconJQ.click(function() {
-            $( '.game-options' ).removeClass( 'show' ).addClass( 'hide' );
-            $( 'canvas' ).removeClass( 'hide' ).addClass( 'show' );
-
+    function getCloseIconClickHandler(canvasJQ, gameOptionsJQ) {
+        return function() {
+            gameOptionsJQ.removeClass( 'show' ).addClass( 'hide' );
+            canvasJQ.removeClass( 'hide' ).addClass( 'show' );
             Engine.init();
-            });
+        }
     }
 
-    function attachMenuHandlers() {
-
-        // get DOM
-        let menuItemJQ = $( '.menu-li:contains(Players)' );
-        let playerOverlayJQ = $( '.players-ul' );
-        menuItemJQ.click(function() {
-            playerOverlayJQ.removeClass( 'hide' ).addClass( 'show' );
-            menuItemJQ.addClass( 'white-text' );
-        });
+    function attachCloseIconClickHandler(closeIconJQ, canvasJQ, gameOptionsJQ) {
+        closeIconJQ.click(getCloseIconClickHandler(canvasJQ, gameOptionsJQ));
     }
 
+    /**
+    * @description creates game players and returns an array of players
+    */
     function createPlayers() {
-
         let players = [];
         for (let i = 0; i < PLAYER_IMAGES.length; i++) {
             players.push(new Player(PLAYER_IMAGES[i]));
@@ -618,8 +733,10 @@ let Game = function(global) {
         return players;
     }
 
+    /**
+    * @description creates game enemies and returns an array of enemies
+    */
     function createEnemies(enemyCnt) {
-
         let enemies = [];
         for (let i = 0; i < enemyCnt; i++) {
                enemies.push(new Enemy());
@@ -627,10 +744,11 @@ let Game = function(global) {
         return enemies;
     }
 
+    /**
+    * @description creates game prizes and returns an array of prizes
+    */
     function createPrizes() {
-
         let prizes = [];
-
         prizes.push(new Prize('images/Gem Green.png', 10, 80));
         prizes.push(new Prize('images/Gem Blue.png',10, 78));
         prizes.push(new Prize('images/Gem Orange.png', 10, 77));
@@ -641,6 +759,9 @@ let Game = function(global) {
         return prizes;
     }
 
+    /**
+    * @description creates game canvas and adds event listeners for menu and restart
+    */
     function createCanvas() {
         let doc = global.document;
         canvas = doc.createElement('canvas');
@@ -657,13 +778,15 @@ let Game = function(global) {
         canvas.addEventListener('mousemove', function(e) {
             game.menuBarComponent.cursorHandler(e);
         });
-
         canvas.addEventListener('mousemove', function(e) {
             game.restartComponent.cursorHandler(e);
         });
         return canvas;
     }
 
+    /**
+    * @description attach button handler to play again button
+    */
     function attachButtonHandler() {
         $('.buttn').click(function() {
             game.gameOverOverlayJQ.removeClass('transparent').addClass('hide');
@@ -691,7 +814,6 @@ let Game = function(global) {
     this.players = createPlayers();
     this.player = this.players[0];
     this.renderables.push(this.player);
-    this.updateables.push(this.player);
     this.enemies = createEnemies(5);
     this.prizes = createPrizes();
     this.renderables = this.renderables.concat(this.prizes);
@@ -699,14 +821,9 @@ let Game = function(global) {
     this.renderables.push(this.scoreComponent);
     this.canvas = createCanvas();
     this.canvasJQ = $('canvas');
-    attachMenuHandlers();
-    attachCloseIconHandler();
+    attachCloseIconClickHandler($( '.close-x' ), this.canvasJQ, $( '.game-options' ));
     attachButtonHandler();
 
-
-
-    // This listens for key presses and sends the keys to your
-    // Player.handleInput() method. You don't need to modify this.
     document.addEventListener('keyup', function(e) {
         var allowedKeys = {
             37: 'left',
@@ -714,40 +831,60 @@ let Game = function(global) {
             39: 'right',
             40: 'down'
         };
-
-    game.player.handleInput(allowedKeys[e.keyCode]);
+        game.player.move(allowedKeys[e.keyCode]);
     });
 }
 
+/**
+* @description Returns game renderables
+*/
 Game.prototype.getRenderables = function() {
     return this.renderables;
 }
 
+/**
+* @description Returns game updateables
+*/
 Game.prototype.getUpdateables = function() {
     return this.updateables;
 }
 
+/**
+* @description Returns canvas
+*/
 Game.prototype.getCanvas = function() {
     return this.canvas;
 }
 
+/**
+* @description Sets the current game player
+* @param {Player} player - New player
+*/
 Game.prototype.setPlayer = function(player) {
     // ignore if player clicked is already current player
     if (player === this.player)
         return;
     this.player.deselect();
+    let index = this.renderables.indexOf(this.player);
+    this.renderables.splice(index, 1);
     this.player = player;
     this.player.select();
+    this.renderables.push(this.player);
     this.reset();
 }
 
+/**
+* @description Returns the array of enemies
+*/
 Game.prototype.getEnemies = function() {
     return this.enemies;
 }
 
+/**
+* @description Displays game won overlay with game stats
+* @param {string} endType - "WIN" or "LOSS"
+*/
 Game.prototype.processGameEnd = function(endType) {
-
-    Engine.stopEngine();
     this.player.addStats(endType);
     let stats = this.player.getLastStats();
 
@@ -759,49 +896,41 @@ Game.prototype.processGameEnd = function(endType) {
     this.gameOverOverlayJQ.removeClass('hide').addClass('transparent');
 }
 
-
-Game.prototype.reset = function(gameEnd) {
-
- // reset player
+/**
+* @description Sets up a new game
+*/
+Game.prototype.reset = function() {
+    // reset player
     this.player.reset();
-// reset prizes
+    // reset prizes
     Prize.prototype.board.reset();
     for (let i = 0; i < this.prizes.length; i++)
         this.prizes[i].reset();
-// reset clock
+    // reset clock
     this.clockComponent.reset();
-// reset score
+    // reset score
     this.scoreComponent.reset();
-// reset enemies
+    // reset enemies
     for (let i = 0; i < this.enemies.length; i++)
         this.enemies[i].reset();
     Engine.init();
 }
 
+/**
+* @description Returns the current player
+*/
 Game.prototype.getPlayer = function() {
     return this.player;
 }
 
+/**
+* @description Removes captured prize from board and updates player score
+*/
 Game.prototype.processCapturedPrize = function(prize) {
-
     let index = this.renderables.indexOf(prize);
     this.renderables.splice(index, 1);
     prize.removeFromBoard();
     this.scoreComponent.update(prize.points);
 }
-
-
-/*
-Game.prototype.getMenuBar = function() {
-    return this.menuBarComponent;
-}
-
-Game.prototype.getTitle = function() {
-    return this.titleComponent;
-}
-
-Game.prototype.getRestartButton = function() {
-    return this.restartComponent;
-}*/
 
 
